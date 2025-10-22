@@ -10,9 +10,15 @@ import streamlit as st
 from streamlit_cropper import st_cropper
 
 # Importar extractores
-from extract_rgb_histogram import extract_rgb_histogram
+from extractores import (
+    extract_rgb_histogram,
+    extract_vgg19,
+    extract_inceptionv3,
+    extract_mobilenet,
+    extract_segmentation
+)
 
-os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 st.set_page_config(layout="wide")
 
@@ -25,7 +31,8 @@ IMAGES_PATH = os.path.join(FILES_PATH, 'images')
 # Path in which the database should be located
 DB_PATH = os.path.join(FILES_PATH, 'database')
 
-DB_FILE = 'db.csv' # name of the database
+DB_FILE = 'db.csv'  # CSV con nombres de imagenes
+
 
 def get_image_list():
     df = pd.read_csv(os.path.join(DB_PATH, DB_FILE))
@@ -33,23 +40,31 @@ def get_image_list():
     return image_list
 
 def retrieve_image(img_query, feature_extractor, n_imgs=11):
-    if (feature_extractor == 'Extractor 1'):
-        # TODO: select the database according to the feature extractor
-        # Function to preprocess and extract features
+    if feature_extractor == 'Extractor 1':
         model_feature_extractor = extract_rgb_histogram
-        indexer = faiss.read_index(os.path.join(DB_PATH,  'extract_rgb_histogram.index'))
-    elif (feature_extractor == 'Extractor 2'):
-        model_feature_extractor = ...
-        indexer = faiss.read_index(os.path.join(DB_PATH,  'feat_extract_2.index'))
+        indexer = faiss.read_index(os.path.join(DB_PATH, 'extract_rgb_histogram.index'))
+    elif feature_extractor == 'Extractor 2':
+        model_feature_extractor = extract_vgg19
+        indexer = faiss.read_index(os.path.join(DB_PATH, 'extract_vgg19.index'))
+    elif feature_extractor == 'Extractor 3':
+        model_feature_extractor = extract_inceptionv3
+        indexer = faiss.read_index(os.path.join(DB_PATH, 'extract_inceptionv3.index'))
+    elif feature_extractor == 'Extractor 4':
+        model_feature_extractor = extract_mobilenet
+        indexer = faiss.read_index(os.path.join(DB_PATH, 'extract_mobilenet.index'))
+    elif feature_extractor == 'Extractor 5':
+        model_feature_extractor = extract_segmentation
+        indexer = faiss.read_index(os.path.join(DB_PATH, 'extract_segmentation.index'))
+    else:
+        raise ValueError(f"Extractor '{feature_extractor}' no definido")
 
-    # TODO: Modify accordingly
+    # Extraer características y normalizar
     embeddings = model_feature_extractor(img_query)
     vector = np.float32(embeddings)
     faiss.normalize_L2(vector)
 
+    # Buscar en el índice
     distancias, indices = indexer.search(vector, k=n_imgs)
-    distancias = np.round(distancias, 3)
-
     return distancias[0], indices[0]
 
 def main():
@@ -61,18 +76,22 @@ def main():
         st.header('QUERY')
 
         st.subheader('Choose feature extractor')
-        # TODO: Adapt to the type of feature extraction methods used.
-        option = st.selectbox('.', ('Extractor 1', 'Extractor 2'))
+        option = st.selectbox('.', (
+            'Extractor 1',  # RGB Histogram
+            'Extractor 2',  # VGG19
+            'Extractor 3',  # InceptionV3
+            'Extractor 4',  # MobileNet
+            'Extractor 5'   # Segmentation
+        ))
 
         st.subheader('Upload image')
         img_file = st.file_uploader(label='.', type=['png', 'jpg'])
 
         if img_file:
             img = Image.open(img_file)
-            # Get a cropped image from the frontend
+            # Obtener imagen recortada
             cropped_img = st_cropper(img, realtime_update=True, box_color='#FF0004')
             
-            # Manipulate cropped image at will
             st.write("Preview")
             _ = cropped_img.thumbnail((150,150))
             st.image(cropped_img)
@@ -94,12 +113,12 @@ def main():
             with col3:
                 image = Image.open(os.path.join(IMAGES_PATH, image_list[retriev[0]]))
                 st.image(image, use_container_width = 'always')
-                st.write(f"Distancia: {dist[0]}, con Indice: {retriev[0]}")
+                st.write(f"Distancia: {round(dist[0], 3):.3f}, con Indice: {retriev[0]}")
 
             with col4:
                 image = Image.open(os.path.join(IMAGES_PATH, image_list[retriev[1]]))
                 st.image(image, use_container_width = 'always')
-                st.write(f"Distancia: {dist[1]}, con Indice: {retriev[1]}")
+                st.write(f"Distancia: {round(dist[1], 3):.3f}, con Indice: {retriev[1]}")
 
             col5, col6, col7 = st.columns(3)
 
@@ -107,19 +126,20 @@ def main():
                 for u in range(2, 11, 3):
                     image = Image.open(os.path.join(IMAGES_PATH, image_list[retriev[u]]))
                     st.image(image, use_container_width = 'always')
-                    st.write(f"Distancia: {dist[u]}, con Indice: {retriev[u]}")
+                    st.write(f"Distancia: {round(dist[u], 3):.3f}, con Indice: {retriev[u]}")
 
             with col6:
                 for u in range(3, 11, 3):
                     image = Image.open(os.path.join(IMAGES_PATH, image_list[retriev[u]]))
                     st.image(image, use_container_width = 'always')
-                    st.write(f"Distancia: {dist[u]}, con Indice: {retriev[u]}")
+                    st.write(f"Distancia: {round(dist[u], 3):.3f}, con Indice: {retriev[u]}")
 
             with col7:
                 for u in range(4, 11, 3):
                     image = Image.open(os.path.join(IMAGES_PATH, image_list[retriev[u]]))
                     st.image(image, use_container_width = 'always')
-                    st.write(f"Distancia: {dist[u]}, con Indice: {retriev[u]}")
+                    st.write(f"Distancia: {round(dist[u], 3):.3f}, con Indice: {retriev[u]}")
+
 
 if __name__ == '__main__':
     main()
