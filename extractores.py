@@ -5,13 +5,14 @@ import faiss
 from pathlib import Path
 import torch
 from torchvision import models, transforms as T
-from torchvision.models import VGG19_Weights, Inception_V3_Weights, MobileNet_V2_Weights
+from torchvision.models import VGG19_Weights, Inception_V3_Weights
+import cv2
 import os
 
 # Carpetas
 IMAGES_FOLDER = Path("images")  # imágenes de entrenamiento
 DB_PATH = Path("database")
-# DB_PATH.mkdir(exist_ok=True)
+DB_PATH.mkdir(exist_ok=True)
 
 # Configuración general
 DB_FILE = "db.csv"
@@ -32,7 +33,47 @@ def extract_rgb_histogram(img, size=(224,224)):
     return hist.reshape(1,-1)
 
 
-# 2. VGG19
+# 2. SIFT Descriptor
+def extract_sift(img, size=(224,224)):
+    # Convertir a escala de grises
+    img = img.resize(size)
+    img_gray = np.array(img.convert("L"))
+
+    sift = cv2.SIFT_create()
+    keypoints, descriptors = sift.detectAndCompute(img_gray, None)
+
+    if descriptors is None or len(descriptors) == 0:
+        # Si no detecta keypoints, devolvemos un vector nulo
+        descriptors = np.zeros((1, 128), dtype=np.float32)
+
+    # Hacemos la media de todos los descriptores para obtener un vector fijo
+    feat = np.mean(descriptors, axis=0)
+
+    # Normalizamos
+    feat = feat.astype(np.float32)
+    feat /= (np.linalg.norm(feat) + 1e-6)
+
+    return feat.reshape(1, -1)
+
+
+# 3. Segmentación (DeepLabV3)
+deeplab_model = models.segmentation.deeplabv3_resnet50(weights="DEFAULT").eval()
+seg_transform = T.Compose([
+    T.Resize((224,224)),
+    T.ToTensor(),
+    T.Normalize(mean=[0.485,0.456,0.406], std=[0.229,0.224,0.225])
+])
+def extract_segmentation(img):
+    img_t = seg_transform(img).unsqueeze(0)
+    with torch.no_grad():
+        output = deeplab_model(img_t)['out']
+        feat = torch.nn.functional.adaptive_avg_pool2d(output, (1,1)).squeeze().numpy()
+    feat = feat.astype(np.float32)
+    feat /= np.linalg.norm(feat) + 1e-6
+    return feat.reshape(1,-1)
+
+
+# 4. VGG19
 vgg19_model = models.vgg19(weights=VGG19_Weights.DEFAULT).features.eval()
 vgg19_transform = T.Compose([
     T.Resize((224,224)),
@@ -48,7 +89,7 @@ def extract_vgg19(img):
     return feat.reshape(1,-1)
 
 
-# 3. InceptionV3
+# 5. InceptionV3
 inception_model = models.inception_v3(weights=Inception_V3_Weights.DEFAULT)
 inception_model.eval()
 inception_transform = T.Compose([
@@ -59,46 +100,14 @@ inception_transform = T.Compose([
 def extract_inceptionv3(img):
     img_t = inception_transform(img).unsqueeze(0)
     with torch.no_grad():
-        # Solo usamos la salida principal, ignorando la auxiliar
         feat = inception_model(img_t)
     feat = feat.detach().numpy().astype('float32')
     feat /= (np.linalg.norm(feat)+1e-6)
     return feat.reshape(1,-1)
 
 
-# 4. MobileNetV2
-mobilenet_model = models.mobilenet_v2(weights=MobileNet_V2_Weights.DEFAULT).features.eval()
-mobilenet_transform = T.Compose([
-    T.Resize((224,224)),
-    T.ToTensor(),
-    T.Normalize(mean=[0.485,0.456,0.406], std=[0.229,0.224,0.225])
-])
-def extract_mobilenet(img):
-    img_t = mobilenet_transform(img).unsqueeze(0)
-    with torch.no_grad():
-        feat = mobilenet_model(img_t).mean([2,3]).numpy()
-    feat = feat.astype('float32')
-    feat /= (np.linalg.norm(feat)+1e-6)
-    return feat.reshape(1,-1)
-
-# 5. Segmentación (DeepLabV3)
-deeplab_model = models.segmentation.deeplabv3_resnet50(pretrained=True).eval()
-seg_transform = T.Compose([
-    T.Resize((224,224)),
-    T.ToTensor(),
-    T.Normalize(mean=[0.485,0.456,0.406], std=[0.229,0.224,0.225])
-])
-def extract_segmentation(img):
-    img_t = seg_transform(img).unsqueeze(0)
-    with torch.no_grad():
-        output = deeplab_model(img_t)['out']
-        feat = torch.nn.functional.adaptive_avg_pool2d(output, (1,1)).squeeze().numpy()
-    feat = feat.astype(np.float32)
-    feat /= np.linalg.norm(feat) + 1e-6
-    return feat.reshape(1,-1)
-
 # -------------------------
-# FUNCIONES PARA GENERAR INDICES FAISS
+# FUNCIONES PARA GENERAR ÍNDICES FAISS
 # -------------------------
 
 def build_index(extractor_func, index_name):
@@ -112,7 +121,7 @@ def build_index(extractor_func, index_name):
         features.append(feat)
         image_files.append(img_path.name)
 
-        # Guardar etiquetas de las imágenes para meterlas en el CSV
+        # Guardar etiquetas de las imágenes para el CSV
         name = os.path.splitext(os.path.basename(img_path))[0]
         etiqueta = name.rsplit('_', 1)[0]
         etiquetas.append(etiqueta)
@@ -133,7 +142,7 @@ def build_index(extractor_func, index_name):
 
 if __name__ == "__main__":
     build_index(extract_rgb_histogram, "extract_rgb_histogram.index")
+    build_index(extract_segmentation, "extract_segmentation.index")
+    build_index(extract_sift, "extract_sift.index")
     build_index(extract_vgg19, "extract_vgg19.index")
     build_index(extract_inceptionv3, "extract_inceptionv3.index")
-    build_index(extract_mobilenet, "extract_mobilenet.index")
-    build_index(extract_segmentation, "extract_segmentation.index")
