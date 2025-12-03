@@ -9,29 +9,12 @@
 1. Clona este repositorio en tu máquina local:
 
     ```bash
-    git clone https://github.com/upm-classes/aapi_2025
+    git clone https://github.com/miguelangel-suarez/Proyecto_CBIR
     cd cbir
     ```
 
-2. Crea un entorno virtual (opcional pero recomendado):
 
-    ```bash
-    python -m venv cbir
-    ```
-
-    En Windows :
-
-    ```
-    cbir\Scripts\activate
-    ```
-
-    En macOS/Linux :
-
-    ```
-    source cbir/bin/activate  
-    ```
-
-3. Instala las dependencias:
+2. Instala las dependencias dentro de un entorno virtual:
 
     ```bash
     pip install -r requirements.txt
@@ -39,7 +22,8 @@
 
 ## Ejecución
 
-Para ejecutar la aplicación, usa el siguiente comando:
+Para ejecutar la aplicación, sólo se debe ejecutar el archivo de "app.py".
+Para ello, use el siguiente comando:
 
 ```bash
 streamlit run app.py
