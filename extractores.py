@@ -1,3 +1,20 @@
+"""
+--------------- EXTRACTORES.PY ----------------------
+
+Este archivo Python es el responsable de coger todas las imágenes de entrenamiento (guardadas en la carpeta de "images"),
+y crear los embeddings correspondientes a cada imagen según el extractor de características definido.
+Además, este archivo esta encargado de crear las 5 tablas FAISS donde guardar el embedding de cada imagen según el
+extractor de características pasado. Consecuentemente, los índices de dichas imagenes guardadas en FAISS se
+almacenan dentro de un archivo CSV donde para cada índice guardar también el path de la imagen real (dentro de
+los directorios de este proyecto) y la etiqueta final correspondiente a la clase a la que pertenece dicha imagen.
+
+IMPORTANTE: Este archivo NO hay que ejecutarlo.
+
+Sólo sirve para crear las tablas FAISS, el CSV y las funciones Python que utilizará el archivo Python principal "app.py".
+Al ejecutar el archivo "app.py", se usarán las componentes creadas anteriormente, y se realizan llamadas a las funciones
+de los extractores implementados.
+"""
+
 from PIL import Image
 import numpy as np
 import pandas as pd
@@ -9,7 +26,7 @@ from torchvision.models import VGG19_Weights, Inception_V3_Weights
 import cv2
 import os
 
-# Carpetas
+# Leemos Carpetas
 IMAGES_FOLDER = Path("images")  # imágenes de entrenamiento
 DB_PATH = Path("database")
 DB_PATH.mkdir(exist_ok=True)

@@ -1,3 +1,22 @@
+"""
+--------------------- APP.PY -----------------
+
+Este archivo es el responsable de generar una interfaz de usuario mediante la librería de "streamlit" para así dar
+funcionalidad al proyecto completo.
+
+IMPORTANTE: Ejecutar este archivo:
+          1. Primero, situarse en el directorio principal de "Proyecto_CBIR".
+          2. Instalar todas las dependencias necesarias, presentes en el archivo "requirements.txt".
+          3. Ejecutar el siguiente comando a través de la terminal:
+                    "streamlit run app.py"
+          4. Cuando se ejecute la interfaz de STREAMLIT, seleccionar el extractor a usar, insertar una de las imágenes
+             disponibles en el directorio de "test" y comprobar el funcionamiento del programa.
+
+
+"App.py" hace uso de los archivos contenidos en la carpeta de "database", y de las funciones Python alojadas en el
+archivo de "extractores.py" para realizar la creación de los embeddings correspondientes al extractor seleccionado.
+"""
+
 import torch
 import faiss
 import pathlib
