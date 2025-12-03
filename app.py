@@ -15,6 +15,11 @@ IMPORTANTE: Ejecutar este archivo:
 
 "App.py" hace uso de los archivos contenidos en la carpeta de "database", y de las funciones Python alojadas en el
 archivo de "extractores.py" para realizar la creación de los embeddings correspondientes al extractor seleccionado.
+
+Las imágenes que se usan para realizar las consultas desde la interfaz son las imágenes de la carpeta de "test", que se
+puede encontrar dentro del enlace de Google Drive (Junto con el resto de imágenes usadas para el entrenamiento):
+
+          - https://drive.google.com/drive/folders/1p3dLfA0RKP7PGz6-KgcPmk8MWoNitVAy?usp=drive_link
 """
 
 import torch

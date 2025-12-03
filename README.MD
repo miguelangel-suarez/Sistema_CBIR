@@ -19,6 +19,12 @@
     ```bash
     pip install -r requirements.txt
     ```
+3. Descargar desde Google Drive las carpetas correspondientes a las imágenes
+de entrenamiento (carpeta "images") y a las imágenes de test (carpeta "test").
+- https://drive.google.com/drive/folders/1p3dLfA0RKP7PGz6-KgcPmk8MWoNitVAy?usp=drive_link
+
+Añadir las 2 carpetas de imágenes al mismo nivel que el resto de los archivos de este repositorio.
+
 
 ## Ejecución
 
