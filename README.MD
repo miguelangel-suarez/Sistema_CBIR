@@ -10,7 +10,6 @@
 
     ```bash
     git clone https://github.com/miguelangel-suarez/Proyecto_CBIR
-    cd cbir
     ```
 
 
@@ -24,8 +23,9 @@ de entrenamiento (carpeta "images") y a las imágenes de test (carpeta "test").
 - https://drive.google.com/drive/folders/1p3dLfA0RKP7PGz6-KgcPmk8MWoNitVAy?usp=drive_link
 
 En este repositorio se incluye la carpeta de "test" donde poder encontrar las 50 
-imágenes usadas para evaluar nuestro programa. Aun así, dentro del Drive se encuentra todo
-el conjunto de imágenes.
+imágenes usadas para evaluar nuestro programa. Aun así, para el correcto funcionamiento
+del programa, se DEBERÁ descargar la carpeta de "images", y situarla al mismo nivel que el
+resto de carpetas y archivos.
 
 
 ## Ejecución
