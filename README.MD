@@ -10,22 +10,27 @@
 
     ```bash
     git clone https://github.com/miguelangel-suarez/Proyecto_CBIR
-    ```
+    cd Proyecto_CBIR 
+   ```
 
+2. Crear un entorno virtual y activarlo (desde Windows en nuestro caso):
 
-2. Instala las dependencias dentro de un entorno virtual:
+   ```bash
+   python -m venv venv
+   venv/Scripts/activate
+   ```
+
+3. Instala las dependencias dentro del entorno virtual:
 
     ```bash
     pip install -r requirements.txt
     ```
-3. Descargar desde Google Drive las carpetas correspondientes a las imágenes
+4. Descargar desde Google Drive las carpetas correspondientes a las imágenes
 de entrenamiento (carpeta "images") y a las imágenes de test (carpeta "test").
 - https://drive.google.com/drive/folders/1p3dLfA0RKP7PGz6-KgcPmk8MWoNitVAy?usp=drive_link
 
-En este repositorio se incluye la carpeta de "test" donde poder encontrar las 50 
-imágenes usadas para evaluar nuestro programa. Aun así, para el correcto funcionamiento
-del programa, se DEBERÁ descargar la carpeta de "images", y situarla al mismo nivel que el
-resto de carpetas y archivos.
+Para el correcto funcionamiento del programa, se DEBERÁ descargar las 2 carpetas de "images" y "test", y situarlas al
+mismo nivel que el resto de carpetas y archivos.
 
 
 ## Ejecución

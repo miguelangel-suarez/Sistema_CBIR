@@ -7,9 +7,10 @@ funcionalidad al proyecto completo.
 IMPORTANTE: Ejecutar este archivo:
           1. Primero, situarse en el directorio principal de "Proyecto_CBIR".
           2. Instalar todas las dependencias necesarias, presentes en el archivo "requirements.txt".
-          3. Ejecutar el siguiente comando a través de la terminal:
+          3. Descargar las 2 carpetas de imágenes "test" y "images".
+          4. Ejecutar el siguiente comando a través de la terminal:
                     "streamlit run app.py"
-          4. Cuando se ejecute la interfaz de STREAMLIT, seleccionar el extractor a usar, insertar una de las imágenes
+          5. Cuando se ejecute la interfaz de STREAMLIT, seleccionar el extractor a usar, insertar una de las imágenes
              disponibles en el directorio de "test" y comprobar el funcionamiento del programa.
 
 
@@ -17,7 +18,9 @@ IMPORTANTE: Ejecutar este archivo:
 archivo de "extractores.py" para realizar la creación de los embeddings correspondientes al extractor seleccionado.
 
 Las imágenes que se usan para realizar las consultas desde la interfaz son las imágenes de la carpeta de "test", que se
-puede encontrar dentro del enlace de Google Drive (Junto con el resto de imágenes usadas para el entrenamiento):
+puede encontrar dentro del enlace de Google Drive (Junto con el resto de imágenes usadas para el entrenamiento, las
+cuáles hay que descargarse también para que la interfaz pueda mostrar las imágemes más parecidas a la imagen
+ de consulta):
 
           - https://drive.google.com/drive/folders/1p3dLfA0RKP7PGz6-KgcPmk8MWoNitVAy?usp=drive_link
 """
