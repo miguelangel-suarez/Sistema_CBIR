@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app-cbir:
     build: .
@@ -11,4 +9,5 @@ services:
       # Útil si actualizas tus índices FAISS en tu ordenador y quieres
       # probarlos sin tener que reconstruir (build) la imagen de Docker.
       - ./database:/app/database
+      - ./images:/app/images
     restart: unless-stopped

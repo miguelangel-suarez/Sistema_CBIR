@@ -3,6 +3,7 @@
 venv/
 .idea/
 __pycache__/
+images/
 
 Dockerfile
 docker-compose.yml
