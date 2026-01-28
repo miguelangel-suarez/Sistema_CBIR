@@ -1,7 +1,7 @@
 # .dockerignore
 .git/
 venv/
-.idea
+.idea/
 __pycache__/
 
 Dockerfile
