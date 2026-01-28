@@ -41,8 +41,7 @@ from extractores import (
     extract_rgb_histogram,
     extract_vgg19,
     extract_inceptionv3,
-    extract_sift,
-    extract_segmentation
+    extract_sift
 )
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
@@ -90,9 +89,6 @@ def retrieve_image(img_query, feature_extractor, n_imgs=11):
     elif feature_extractor == 'SIFT':
         model_feature_extractor = extract_sift
         indexer = faiss.read_index(os.path.join(DB_PATH, 'extract_sift.index'))
-    elif feature_extractor == 'DeepLabV3':
-        model_feature_extractor = extract_segmentation
-        indexer = faiss.read_index(os.path.join(DB_PATH, 'extract_segmentation.index'))
     elif feature_extractor == 'VGG19':
         model_feature_extractor = extract_vgg19
         indexer = faiss.read_index(os.path.join(DB_PATH, 'extract_vgg19.index'))
@@ -126,7 +122,6 @@ def main():
         option = st.selectbox(' ', (
             'RGB Histogram',
             'SIFT',
-            'DeepLabV3',
             'VGG19',
             'InceptionV3'
         ))

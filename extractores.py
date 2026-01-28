@@ -73,24 +73,8 @@ def extract_sift(img, size=(224,224)):
     return feat.reshape(1, -1)
 
 
-# 3. Segmentación (DeepLabV3)
-deeplab_model = models.segmentation.deeplabv3_resnet50(weights="DEFAULT").eval()
-seg_transform = T.Compose([
-    T.Resize((224,224)),
-    T.ToTensor(),
-    T.Normalize(mean=[0.485,0.456,0.406], std=[0.229,0.224,0.225])
-])
-def extract_segmentation(img):
-    img_t = seg_transform(img).unsqueeze(0)
-    with torch.no_grad():
-        output = deeplab_model(img_t)['out']
-        feat = torch.nn.functional.adaptive_avg_pool2d(output, (1,1)).squeeze().numpy()
-    feat = feat.astype(np.float32)
-    feat /= np.linalg.norm(feat) + 1e-6
-    return feat.reshape(1,-1)
 
-
-# 4. VGG19
+# 3. VGG19
 vgg19_model = models.vgg19(weights=VGG19_Weights.DEFAULT).features.eval()
 vgg19_transform = T.Compose([
     T.Resize((224,224)),
@@ -106,7 +90,7 @@ def extract_vgg19(img):
     return feat.reshape(1,-1)
 
 
-# 5. InceptionV3
+# 4. InceptionV3
 inception_model = models.inception_v3(weights=Inception_V3_Weights.DEFAULT)
 inception_model.eval()
 inception_transform = T.Compose([
@@ -159,7 +143,6 @@ def build_index(extractor_func, index_name):
 
 if __name__ == "__main__":
     build_index(extract_rgb_histogram, "extract_rgb_histogram.index")
-    build_index(extract_segmentation, "extract_segmentation.index")
     build_index(extract_sift, "extract_sift.index")
     build_index(extract_vgg19, "extract_vgg19.index")
     build_index(extract_inceptionv3, "extract_inceptionv3.index")
